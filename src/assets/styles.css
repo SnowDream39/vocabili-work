@@ -1,0 +1,192 @@
+@import "light.css";
+@import "dark.css";
+
+* {
+  box-sizing: border-box;
+}
+
+
+
+body {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+
+  color: var(--md-sys-color-on-surface);
+}
+
+div#app {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  text-align: center;
+}
+
+
+.shadow-box {
+  background-color: var(--md-sys-color-surface-container);
+  border-radius: 12px; /* 圆角边框 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 轻微阴影，增加层次感 */
+}
+
+.big-title {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.small-title {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+input::file-selector-button {
+  padding: 0.5em;
+  border: 2px solid black;
+  border-radius: 10px;
+  background-color: color-mix(in oklab, white 80%, gray);
+
+
+}
+
+input:hover::file-selector-button {
+  background-color: color-mix(in oklab, white 60%, gray);
+}
+
+input:active::file-selector-button {
+  background-color: color-mix(in oklab, white 50%, gray);
+}
+
+.surface-clickable {
+  cursor: pointer;
+  background-color: var(--md-sys-color-surface);
+
+  &:hover {
+    background-color: var(--md-sys-color-surface-variant);
+  }
+}
+
+a.text-link {
+  position: relative;
+
+  &:hover {
+    color: var(--md-sys-color-primary)
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px; /* 控制距离 */
+    width: 100%;
+    height: 1px;
+    background: var(--md-sys-color-on-surface);
+
+  }
+}
+
+a, button {
+  cursor: pointer;
+}
+
+
+.boardpagination {
+  display: flex;
+  justify-content: center;
+  padding: 15px 10px;
+}
+
+ .pagination {
+  max-width: 100%;
+  font-size: 14px;
+}
+
+
+.vue3-marquee {
+  overflow-y: hidden !important;
+}
+
+.marquee::after {
+  content: '';
+  width: 1em;
+}
+
+
+.el-dialog {
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  box-sizing: border-box !important;
+  width: min(90%, 500px) !important;
+  /* position: absolute;
+  top: center;
+  left: center;
+  transform: translate(-50%, -50%); */
+  border-radius: 12px !important;
+}
+
+.el-drawer__body {
+  padding: 0 !important;
+  scrollbar-width: none;
+}
+
+.el-menu--vertical {
+  background-color: var(--md-sys-color-surface); /* 奇数行 */
+  & > :nth-child(odd) {
+    background-color: var(--md-sys-color-surface); /* 奇数行 */
+  }
+
+  & > :nth-child(even) {
+    background-color: var(--md-sys-color-surface-container); /* 偶数行 */
+  }
+
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+}
+
+.el-pagination {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 630px) {
+  .boardpagination {
+    padding: 10px 5px;
+  }
+
+  .pagination {
+    font-size: 12px;
+    :deep(.el-pagination__jump) {
+      margin-left: 0;
+    }
+    :deep(.el-pagination button) {
+      min-width: 24px;
+    }
+    :deep(.el-pager li) {
+      min-width: 24px;
+    }
+  }
+}
+
+/*  Element Plus 变量 */
+
+:root {
+  --el-menu-bg-color: var(--md-sys-color-surface-container);
+  --el-fill-color-blank: transparent;
+  --el-mask-color: transparent;
+}
+
+:root.dark {
+  --el-color-primary: var(--md-sys-color-primary);
+  --el-color-primary-light-3: color-mix(in srgb, var(--md-sys-color-primary) 70%, white);
+  --el-text-color-primary: var(--md-sys-color-on-surface);
+  --el-text-color-regular: var(--md-sys-color-on-surface);
+  --el-menu-bg-color: var(--md-sys-color-surface-container); /* 主背景色 */
+  --el-menu-hover-bg-color: var(--md-sys-color-surface-container-highest);
+  --el-menu-text-color: var(--md-sys-color-on-surface);
+  --el-menu-active-color: var(--md-sys-color-primary);
+}
