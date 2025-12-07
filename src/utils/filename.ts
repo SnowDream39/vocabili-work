@@ -1,8 +1,10 @@
 import * as luxon from 'luxon'
 
+type SequentialBoard = 'vocaloid-monthly' | 'vocaloid-weekly' | 'vocaloid-daily'
+type Part = 'main' | 'new'
 export interface BoardIdentity {
-  board: string,
-  part: string,
+  board: SequentialBoard,
+  part: Part,
   issue: number,
 }
 

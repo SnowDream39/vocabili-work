@@ -1,17 +1,15 @@
 <template>
-  <div class="max-w-120 p-4 border border-gray-200 rounded-md">
-    <h2 class="small-title">文件上传 📤</h2>
-    <div>务必确保文件名符合平时的规范</div>
-    <input type="file" @change="onFileChange" />
-    <div v-if="fileName">选择: {{ fileName }}</div>
+  <div class="w-full p-6 border border-gray-200 rounded-lg">
+    <h2 class="text-xl font-semibold mb-4">文件上传</h2>
+    <div class="mb-4 text-gray-600">务必确保文件名符合平时的规范</div>
+    <input type="file" @change="onFileChange" class="mb-4" />
+    <div v-if="fileName" class="mb-4">选择: {{ fileName }}</div>
 
-    <el-button :disabled="!file" @click="upload">上传</el-button>
-
-    <div v-if="progressVisible" class="progress">
+    <div v-if="progressVisible" class="mb-4">
       进度: {{ progress }}%
     </div>
 
-    <div v-if="resultUrl">
+    <div v-if="resultUrl" class="mb-4 text-green-600">
       上传成功: <b>{{ resultUrl }}</b>
     </div>
 
@@ -21,9 +19,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ElButton } from 'element-plus'
 import api from '@/utils/api/api'
-import { extractFileName, isBoardIdentity, type BoardIdentity } from '@/utils/filename'
+import { extractFileName, type BoardIdentity, type DataIdentity } from '@/utils/filename'
 
 const file = ref(null)
 const fileName = ref('')
@@ -32,38 +29,38 @@ const progressVisible = ref(false)
 const resultUrl = ref('')
 const error = ref('')
 const emit = defineEmits<{
-  (e: 'addFile', value:  BoardIdentity): void
+  (e: 'addFile', value: BoardIdentity | DataIdentity): void
 }>()
 
-
-function onFileChange(e: any) {
+async function onFileChange(e: any) {
   const f = e.target.files?.[0] ?? null
+  if (!f) return
+
   file.value = f
-  fileName.value = f ? f.name : ''
+  fileName.value = f.name
   progress.value = 0
   resultUrl.value = ''
   error.value = ''
 
+  // 先解析文件身份并发送事件
   const identity = extractFileName(f.name)
-  if (isBoardIdentity(identity)) {
-    emit('addFile', identity)
-  }
+  emit('addFile', identity)
+
+  // 然后自动上传文件
+  await upload()
 }
 
 async function upload() {
   if (!file.value) return
 
-  const form = new FormData()
-  form.append('file', file.value)
-
   try {
     progressVisible.value = true
     const res = await api.uploadFile(file.value, progress)
     // 后端返回 { url: "/uploads/xxx.ext" }
-    resultUrl.value = res.data.url ? res.data.url : ''
+    resultUrl.value = res.data?.url ?? ''
     error.value = ''
   } catch (err: any) {
-    error.value = err?.response?.data?.message || err.message || '上传失败'
+    error.value = err?.response?.data?.message ?? err?.message ?? '上传失败'
   } finally {
     progressVisible.value = false
   }
