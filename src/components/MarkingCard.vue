@@ -67,8 +67,8 @@
 import { ElAutocomplete, ElSelect, ElSwitch, ElOption, ElButton } from 'element-plus';
 import MarkingTags from '@/components/MarkingTags.vue';
 import SuspendPanel from '@/components/SuspendPanel.vue';
-import { requester } from '@/utils/api/requester';
 import { onMounted, ref, watch } from 'vue';
+import api from '@/utils/api/api';
 
 const props = defineProps<{
   record: any
@@ -118,10 +118,10 @@ const song = ref<any>()
 
 async function queryName(name: string) {
   if (name.length == 0) return []
-  const result = await requester.search_song_by_name(name, {threshold: 0.4})
-  const res =  result.result.map((item: any) => ({
-    value: item.metadata.name,
-    id: item.metadata.id,
+  const result = await api.search('song', name)
+  const res =  result.data.map((item: any) => ({
+    value: item.name,
+    id: item.id,
   }))
   return res
 }
@@ -132,11 +132,11 @@ function selectName(item: any){
 
 onMounted(async () => {
   if (props.svmode) return
-  const response = await requester.search_song_by_name(props.record.name, { threshold: 1})
+  const response = await api.search('song', props.record.name)
   if (response.total) {
-    song.value = response.result.map((item: any) => ({
-    value: item.metadata.name,
-    id: item.metadata.id,
+    song.value = response.data.map((item: any) => ({
+    value: item.name,
+    id: item.id,
   }))[0]
   }
 })

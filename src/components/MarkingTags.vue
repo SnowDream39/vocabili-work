@@ -14,15 +14,28 @@
     </div>
 
     <!-- 输入框 + 搜索 -->
-    <el-autocomplete
-      v-if="props.useHint"
-      v-model="input"
-      :fetch-suggestions="querySearch"
-      placeholder="输入标签..."
-      @select="handleSelect"
-      :select-when-unmatched="true"
-      clearable
-    />
+    <div class="flex gap-2">
+      <el-autocomplete
+        v-if="props.useHint"
+        v-model="input"
+        :fetch-suggestions="querySearch"
+        placeholder="输入标签..."
+        @select="handleSelect"
+        :select-when-unmatched="true"
+        clearable
+        @keyup.enter="handleAddTag"
+        class="flex-1"
+      />
+      <el-button
+        v-if="isMobile"
+        type="primary"
+        @click="handleAddTag"
+        :disabled="!input.trim()"
+        class="flex-shrink-0 text-sm px-3 py-2 md:text-base md:px-4 md:py-2"
+      >
+        添加
+      </el-button>
+    </div>
 
   </div>
 
@@ -40,8 +53,9 @@
 <script lang="ts" setup>
 import { onMounted, ref, watch } from "vue"
 import { ElMessage } from "element-plus"
-import { requester } from "@/utils/api/requester";
 import { ElTag, ElAutocomplete, ElInputTag } from "element-plus";
+import { useMediaQuery } from "@vueuse/core";
+import api from "@/utils/api/api";
 
 const props = defineProps<{
   type: string
@@ -54,6 +68,8 @@ const value = defineModel<string>({required: true})
 const tags = ref<string[]>([])
 // 输入框
 const input = ref<string>("")
+// 移动端检测
+const isMobile = useMediaQuery("(max-width: 768px)")
 
 // SV榜使用的子榜单
 const svMap = ref<Record<string, any>>({
@@ -65,7 +81,7 @@ const svMap = ref<Record<string, any>>({
 
 // 模拟搜索 API
 async function apiSearch(query: string): Promise<string[]> {
-  const response: any = await requester.search_artist(props.type, query)
+  const response: any = await api.search(props.type, query)
   return response.result.map((item: any) => item.target.name)
 }
 
@@ -87,6 +103,21 @@ function handleSelect(item: Record<string, any>) {
     ElMessage.warning("已经添加过该标签了")
   }
   input.value = ""
+}
+
+// 添加标签（通过按钮或回车）
+function handleAddTag() {
+  const trimmedInput = input.value.trim()
+  if (!trimmedInput) {
+    return
+  }
+
+  if (!tags.value.includes(trimmedInput)) {
+    tags.value.push(trimmedInput)
+    input.value = ""
+  } else {
+    ElMessage.warning("已经添加过该标签了")
+  }
 }
 
 

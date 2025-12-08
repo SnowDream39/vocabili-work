@@ -14,6 +14,7 @@ declare module 'vue' {
     CheckFile: typeof import('./src/components/CheckFile.vue')['default']
     EditName: typeof import('./src/components/EditName.vue')['default']
     EditWork: typeof import('./src/components/EditWork.vue')['default']
+    ElButton: typeof import('element-plus/es')['ElButton']
     Header: typeof import('./src/components/Header.vue')['default']
     Manual: typeof import('./src/components/Manual.vue')['default']
     MarkingCard: typeof import('./src/components/MarkingCard.vue')['default']

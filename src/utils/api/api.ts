@@ -16,6 +16,7 @@ class Requester {
     updateSnapshot: "/update/snapshots",
     editArtistCheck: "/edit/artist/check",
     editArtistConfirm: "/edit/artist/confirm",
+    search: (type: string) => `/search/${type}`,
   }
 
   constructor() {}
@@ -66,6 +67,14 @@ class Requester {
 
   async editArtistConfirm(task_id: string) {
     return api.post(Requester.endpoint.editArtistConfirm, { task_id });
+  }
+
+  async search(type: string, keyword: string, page = 1, pageSize = 20): Promise<any> {
+    // TODO
+    const res =  await api.get(Requester.endpoint.search(type), {
+      params: { keyword, page, page_size: pageSize }
+    })
+    return res.data
   }
 }
 
