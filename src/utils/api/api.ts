@@ -17,6 +17,7 @@ class Requester {
     editArtistCheck: "/edit/artist/check",
     editArtistConfirm: "/edit/artist/confirm",
     search: (type: string) => `/search/${type}`,
+    selectArtist: `/select/artist`,
   }
 
   constructor() {}
@@ -74,6 +75,13 @@ class Requester {
     const res =  await api.get(Requester.endpoint.search(type), {
       params: { keyword, page, page_size: pageSize }
     })
+    return res.data
+  }
+
+  async selectArtist(type: string, id: number) {
+    const res = await api.get(Requester.endpoint.selectArtist, {
+      params: { type, id }
+    });
     return res.data
   }
 }

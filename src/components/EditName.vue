@@ -10,7 +10,8 @@
       </div>
       <div class="mb-5">
         <label class="block mb-2 font-medium text-on-surface">ID：</label>
-        <el-input v-model.number="editForm.id" placeholder="请输入ID" type="number" class="w-full" />
+        <el-input v-model.number="editForm.id" placeholder="请输入ID" type="number" @blur="handleSelectOldName" class="w-full" />
+        <div v-if="old_name">{{ old_name }}</div>
       </div>
       <div class="mb-5">
         <label class="block mb-2 font-medium text-on-surface">新名称：</label>
@@ -86,7 +87,7 @@ interface EditData {
 const dialogVisible = ref(false)
 const confirming = ref(false)
 const editData = ref<EditData | null>(null)
-
+const old_name = ref<string>()
 const editForm = ref({
   type: 'producer',
   id: 0,
@@ -112,6 +113,20 @@ const handleSubmit = async () => {
   }
 
   await showEditDialog(editForm.value.type, Number(editForm.value.id), editForm.value.name)
+}
+
+const handleSelectOldName = async () => {
+  if (!editForm.value.type || !editForm.value.id) {
+    return
+  }
+
+  try {
+    confirming.value = true
+    const result = await api.selectArtist(editForm.value.type, editForm.value.id)
+    if (result.data) {
+      old_name.value = result.data.name
+    }
+  } catch (error: any) {}
 }
 
 const showEditDialog = async (type: string, id: number, name: string) => {

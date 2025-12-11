@@ -82,17 +82,19 @@ const svMap = ref<Record<string, any>>({
 // 模拟搜索 API
 async function apiSearch(query: string): Promise<string[]> {
   const response: any = await api.search(props.type, query)
-  return response.result.map((item: any) => item.target.name)
+  return response.data.map((item: any) => item.name)
 }
 
 
 async function querySearch(query: string, cb: any) {
-  if (!query) {
-    throw Error()
+  console.log(query)
+  if (query) {
+    const results = await apiSearch(query)
+    cb(results.map((item: string) => ({ value: item })))
+    return results.map((item: string) => ({ value: item }))
+  } else {
+    return []
   }
-  const results = await apiSearch(query)
-  cb(results.map((item: string) => ({ value: item })))
-  return results.map((item: string) => ({ value: item }))
 }
 
 // 选择结果
