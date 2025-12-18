@@ -126,6 +126,7 @@ const handleSelectOldName = async () => {
     if (result.data) {
       old_name.value = result.data.name
     }
+    confirming.value = false
   } catch (error: any) {}
 }
 
