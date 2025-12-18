@@ -6,7 +6,7 @@
     <div v-if="fileName" class="mb-4">选择: {{ fileName }}</div>
 
     <div v-if="progressVisible" class="mb-4">
-      进度: {{ progress }}%
+      进度: {{ Math.floor(progress*100) }}%
     </div>
 
     <div v-if="resultUrl" class="mb-4 text-green-600">
@@ -28,8 +28,9 @@ const progress = ref(0)
 const progressVisible = ref(false)
 const resultUrl = ref('')
 const error = ref('')
+const identity = ref<BoardIdentity | DataIdentity>()
 const emit = defineEmits<{
-  (e: 'addFile', value: BoardIdentity | DataIdentity): void
+  (e: 'complete', value: BoardIdentity | DataIdentity): void
 }>()
 
 async function onFileChange(e: any) {
@@ -42,11 +43,8 @@ async function onFileChange(e: any) {
   resultUrl.value = ''
   error.value = ''
 
-  // 先解析文件身份并发送事件
-  const identity = extractFileName(f.name)
-  emit('addFile', identity)
+  identity.value = extractFileName(f.name)
 
-  // 然后自动上传文件
   await upload()
 }
 
@@ -55,7 +53,10 @@ async function upload() {
 
   try {
     progressVisible.value = true
-    const res = await api.uploadFile(file.value, progress)
+    const res = await api.uploadFile(file.value, {
+      onProgress: (p: number) => {progress.value = p},
+      onComplete: () => { emit('complete', identity.value!) }
+    })
     // 后端返回 { url: "/uploads/xxx.ext" }
     resultUrl.value = res.data?.url ?? ''
     error.value = ''

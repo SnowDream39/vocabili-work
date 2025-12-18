@@ -22,7 +22,13 @@ class Requester {
 
   constructor() {}
 
-  async uploadFile(file: File, progressRef: Ref<number, number>) {
+  async uploadFile(
+    file: File,
+    handlers: {
+      onProgress?: (progress: number) => void;
+      onComplete?: () => void;
+      onError?: (error: any) => void;
+    }) {
     const formData = new FormData();
     formData.append("file", file);
     return api.post(Requester.endpoint.uploadFile, formData, {
@@ -31,7 +37,11 @@ class Requester {
       },
       onUploadProgress: (evt) => {
         if (evt.lengthComputable) {
-          progressRef.value = Math.round((evt.loaded * 100) / evt.total!)
+          const progress = evt.loaded / evt.total!;
+          handlers?.onProgress?.(progress);
+          if (progress == 1) {
+            handlers?.onComplete?.();
+          }
         }
       },
     });
@@ -44,13 +54,43 @@ class Requester {
     return res.data;
   }
 
-  async updateRanking(board: string, part: string, issue: number, old?: boolean) {
-    const res = await api.get(Requester.endpoint.updateRanking, {
-      params: { board, part, issue, old },
-      timeout: 100000, // 100秒超时
+  updateRanking(
+    board: string,
+    part: string,
+    issue: number,
+    old?: boolean,
+    handlers?: {
+      onStart?: () => void;
+      onProgress?: (data: string) => void;
+      onComplete?: (data?: string) => void;
+      onError?: (err: Event) => void;
+    }
+  ) {
+    const es = new EventSource(
+      `https://api.vocabili.top/v2/${Requester.endpoint.updateRanking}?board=${board}&part=${part}&issue=${issue}${old ? '&old=true' : ''}`
+    );
+
+    handlers?.onStart?.();
+
+    es.addEventListener("progress", e => {
+      handlers?.onProgress?.(e.data);
     });
-    return res.data;
+
+    es.addEventListener("complete", e => {
+      handlers?.onComplete?.(e.data);
+      es.close(); // ⭐由业务事件关闭
+    });
+
+    es.onerror = e => {
+      // ⚠️ 不一定是错误，可能是正常关闭
+      if (es.readyState !== EventSource.CLOSED) {
+        handlers?.onError?.(e);
+      }
+    };
+
+    return () => es.close(); // 返回一个取消函数
   }
+
 
   async updateSnapshot(date: string, old?: boolean) {
     const res = await api.get(Requester.endpoint.updateSnapshot, {

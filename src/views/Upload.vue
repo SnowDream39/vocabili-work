@@ -5,7 +5,7 @@
 
     <div class="w-full max-w-4xl mt-8">
       <!-- 文件上传区域 -->
-      <UploadFile @add-file="handleUploadFile" />
+      <UploadFile @complete="handleUploadFile" />
     </div>
 
     <!-- 排名文件处理弹窗 -->
@@ -48,7 +48,8 @@
             ✗ 数据更新失败：{{ boardUpdateError }}
           </div>
           <div v-else-if="boardUpdateStatus === 'updating'" class="text-blue-600">
-            更新中...
+            <div>更新中...</div>
+            <div v-if="boardProgress" class="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-600"> {{ boardProgress }} </div>
           </div>
         </div>
       </div>
@@ -65,7 +66,7 @@
             检查文件
           </el-button>
           <el-button
-            v-if="boardCheckStatus === 'success'"
+            v-if="boardCheckStatus === 'success' && boardUpdateStatus != 'success'"
             type="primary"
             @click="handleBoardUpdate"
             :loading="boardUpdating"
@@ -150,6 +151,7 @@ const boardUpdateStatus = ref<'success' | 'failed' | 'updating' | ''>('');
 const boardUpdateError = ref('');
 const boardChecking = ref(false);
 const boardUpdating = ref(false);
+const boardProgress = ref<string>('');
 
 // 数据文件相关状态
 const dataIdentity = ref<DataIdentity | null>(null);
@@ -185,8 +187,10 @@ function handleBoardFile(identity: BoardIdentity) {
   boardUpdateStatus.value = '';
   boardCheckError.value = '';
   boardUpdateError.value = '';
+  boardProgress.value = '';
   boardDialogVisible.value = true;
 }
+
 
 function handleDataFile(identity: DataIdentity) {
   dataIdentity.value = identity;
@@ -227,17 +231,28 @@ async function handleBoardUpdate() {
 
   boardUpdating.value = true;
   boardUpdateStatus.value = 'updating';
+  boardProgress.value = '';
   try {
     await api.updateRanking(
       boardIdentity.value.board,
       boardIdentity.value.part,
-      boardIdentity.value.issue
+      boardIdentity.value.issue,
+      false,
+      {
+        onProgress: (data: string) => {
+          // 处理 progress 事件
+          boardProgress.value = data;
+        },
+        onComplete:  () => {
+          // 处理 complete 事件
+          boardUpdateStatus.value = 'success';
+          boardUpdateError.value = '';
+        }
+    }
     );
-    boardUpdateStatus.value = 'success';
-    boardUpdateError.value = '';
   } catch (err: any) {
     boardUpdateStatus.value = 'failed';
-    boardUpdateError.value = err?.response?.data?.message || err.message || '更新失败';
+    boardUpdateError.value = err?.message || '更新失败';
   } finally {
     boardUpdating.value = false;
   }
@@ -250,6 +265,7 @@ function handleBoardComplete() {
   boardUpdateStatus.value = '';
   boardCheckError.value = '';
   boardUpdateError.value = '';
+  boardProgress.value = '';
 }
 
 async function handleDataProcess() {
