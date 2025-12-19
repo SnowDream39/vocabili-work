@@ -12,8 +12,9 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     CheckFile: typeof import('./src/components/CheckFile.vue')['default']
-    EditName: typeof import('./src/components/EditName.vue')['default']
-    EditWork: typeof import('./src/components/EditWork.vue')['default']
+    EditName: typeof import('./src/components/EditPanels/EditName.vue')['default']
+    EditSong: typeof import('./src/components/EditPanels/EditSong.vue')['default']
+    EditVideo: typeof import('./src/components/EditPanels/EditVideo.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     Header: typeof import('./src/components/Header.vue')['default']
     Manual: typeof import('./src/components/Manual.vue')['default']

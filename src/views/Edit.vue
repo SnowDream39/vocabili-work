@@ -14,15 +14,26 @@
 <script setup lang="ts">
 import { ElTabs, ElTabPane } from 'element-plus';
 import { ref } from 'vue';
-import EditName from '@/components/EditName.vue';
-import EditWork from '@/components/EditWork.vue';
+import EditName from '@/components/EditPanels/EditName.vue';
+import EditSong from '@/components/EditPanels/EditSong.vue';
+import EditVideo from '@/components/EditPanels/EditVideo.vue';
 const activeTab = ref<string>('edit-artist');
 
 const tabs = [
   {
-    label: '编辑艺术家信息',
+    label: '艺术家',
     name: 'edit-artist',
     component: EditName,
   },
+  {
+    label: '歌曲',
+    name: 'edit-song',
+    component: EditSong,
+  },
+  {
+    label: '视频',
+    name: 'edit-video',
+    component: EditVideo,
+  }
 ]
 </script>

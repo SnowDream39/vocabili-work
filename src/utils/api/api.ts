@@ -1,10 +1,10 @@
 import axios from "axios";
-import type { Ref } from "vue";
+import type { SongInfo, VideoInfo } from "@/utils/types";
 
-
+const BASE_URL = "https://api.vocabili.top/v2"
 
 const api = axios.create({
-  baseURL: "https://api.vocabili.top/v2",
+  baseURL: "http://localhost:8000",
   timeout: 20000,
 });
 
@@ -16,8 +16,12 @@ class Requester {
     updateSnapshot: "/update/snapshots",
     editArtistCheck: "/edit/artist/check",
     editArtistConfirm: "/edit/artist/confirm",
+    editSong: "/edit/song",
+    editVideo: "/edit/video",
     search: (type: string) => `/search/${type}`,
     selectArtist: `/select/artist`,
+    selectSong: `/select/song`,
+    selectVideo: `/select/video`,
   }
 
   constructor() {}
@@ -67,7 +71,7 @@ class Requester {
     }
   ) {
     const es = new EventSource(
-      `https://api.vocabili.top/v2/${Requester.endpoint.updateRanking}?board=${board}&part=${part}&issue=${issue}${old ? '&old=true' : ''}`
+      `${BASE_URL}/${Requester.endpoint.updateRanking}?board=${board}&part=${part}&issue=${issue}${old ? '&old=true' : ''}`
     );
 
     handlers?.onStart?.();
@@ -122,6 +126,30 @@ class Requester {
     const res = await api.get(Requester.endpoint.selectArtist, {
       params: { type, id }
     });
+    return res.data
+  }
+
+  async selectSong(id: number): Promise<{data: SongInfo}> {
+    const res = await api.get(Requester.endpoint.selectSong, {
+      params: { id }
+    });
+    return res.data
+  }
+
+  async editSong(song: SongInfo) {
+    const res = await api.post(Requester.endpoint.editSong, song);
+    return res.data
+  }
+
+  async selectVideo(bvid: string): Promise<{data: VideoInfo}> {
+    const res = await api.get(Requester.endpoint.selectVideo, {
+      params: { bvid }
+    });
+    return res.data
+  }
+
+  async editVideo(video: VideoInfo) {
+    const res = await api.post(Requester.endpoint.editVideo, video);
     return res.data
   }
 }

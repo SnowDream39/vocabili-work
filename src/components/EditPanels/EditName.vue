@@ -70,7 +70,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ElDialog, ElButton, ElMessage, ElSelect, ElOption, ElInput } from 'element-plus'
-import api from '../utils/api/api'
+import api from '@/utils/api/api'
 
 interface Artist {
   id: number
