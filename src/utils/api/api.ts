@@ -4,7 +4,7 @@ import type { SongInfo, VideoInfo } from "@/utils/types";
 const BASE_URL = "https://api.vocabili.top/v2"
 
 const api = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: BASE_URL,
   timeout: 20000,
 });
 

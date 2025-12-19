@@ -132,12 +132,15 @@ function selectName(item: any){
 
 onMounted(async () => {
   if (props.svmode) return
-  const response = await api.search('song', props.record.name)
-  if (response.total) {
-    song.value = response.data.map((item: any) => ({
-    value: item.name,
-    id: item.id,
-  }))[0]
+  console.log(props.record)
+  if (props.record.name) {
+    const response = await api.search('song', props.record.name)
+    if (response.total) {
+      song.value = response.data.map((item: any) => ({
+        value: item.name,
+        id: item.id,
+      }))[0]
+    }
   }
 })
 
