@@ -30,7 +30,6 @@ class Requester {
     file: File,
     handlers: {
       onProgress?: (progress: number) => void;
-      onComplete?: () => void;
       onError?: (error: any) => void;
     }) {
     const formData = new FormData();
@@ -43,11 +42,9 @@ class Requester {
         if (evt.lengthComputable) {
           const progress = evt.loaded / evt.total!;
           handlers?.onProgress?.(progress);
-          if (progress == 1) {
-            handlers?.onComplete?.();
-          }
         }
       },
+      timeout: 100000
     });
   }
 

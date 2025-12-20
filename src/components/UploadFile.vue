@@ -55,11 +55,11 @@ async function upload() {
     progressVisible.value = true
     const res = await api.uploadFile(file.value, {
       onProgress: (p: number) => {progress.value = p},
-      onComplete: () => { emit('complete', identity.value!) }
     })
     // 后端返回 { url: "/uploads/xxx.ext" }
     resultUrl.value = res.data?.url ?? ''
     error.value = ''
+    emit('complete', identity.value!)
   } catch (err: any) {
     error.value = err?.response?.data?.message ?? err?.message ?? '上传失败'
   } finally {
